@@ -6,8 +6,10 @@ void setup()
  Serial.begin(9600); //Comunicación serial con la computadora
  pinMode(led,OUTPUT);
  tilin.attach(7); //Conectamos el servo en el pin 7
+ 
  tilin.write(90); //Posición inicial del servo
  delay(500);
+ tilin.write(0); //Posición inicial del servo
 }
 
 void loop()

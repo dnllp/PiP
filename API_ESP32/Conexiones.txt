@@ -1,0 +1,16 @@
+Esquema de Conexión:
+
+Conexión del Sensor DHT22/DHT11:
+VCC a 3.3V.
+GND a GND.
+DATA a GPIO 4.
+
+Conexión del Sensor BMP280:
+VCC a 3.3V.
+GND a GND.
+SDA a GPIO 21 (SDA).
+SCL a GPIO 22 (SCL).
+
+Conexión del LED:
+Pin positivo (ánodo) del LED a través de la resistencia a GPIO 2.
+Pin negativo (cátodo) del LED a GND.

@@ -1,35 +1,39 @@
- #include <WiFi.h>
+    #include <WiFi.h>
     #include <WebServer.h>
     #include <DHT.h>
+    #include <Adafruit_BMP280.h>
+    #include <Wire.h>
     #include <ArduinoJson.h>
 
     const char* ssid = "TuSSID";
     const char* password = "TuContraseña";
 
     #define DHTPIN 4
-    #define DHTTYPE DHT22
+    #define DHTTYPE DHT22 // Cambiar a DHT11 si se usa este sensor
     DHT dht(DHTPIN, DHTTYPE);
+
+    Adafruit_BMP280 bmp;
 
     const int ledPin = 2;
 
     WebServer server(80);
 
     void handleRoot() {
-      server.send(200, "text/plain", "API ESP32");
+      server.send(200, "text/plain", "API ESP32 con DHT y BMP280");
     }
 
-    void handleTemperature() {
-      float t = dht.readTemperature();
+    void handleSensorData() {
+      float t_dht = dht.readTemperature();
       float h = dht.readHumidity();
-
-      if (isnan(t) || isnan(h)) {
-        server.send(500, "text/plain", "Error al leer el sensor DHT");
-        return;
-      }
+      float t_bmp = bmp.readTemperature();
+      float p = bmp.readPressure();
 
       StaticJsonDocument doc;
-      doc["temperatura"] = t;
+      doc["temperatura_dht"] = t_dht;
       doc["humedad"] = h;
+      doc["temperatura_bmp"] = t_bmp;
+      doc["presion"] = p;
+
       String response;
       serializeJson(doc, response);
 
@@ -50,6 +54,12 @@
       Serial.begin(115200);
       pinMode(ledPin, OUTPUT);
       dht.begin();
+      Wire.begin(21, 22); // Inicializa I2C con pines específicos para ESP32
+
+      if (!bmp.begin(0x76)) {
+        Serial.println("No se encontro el sensor BMP280");
+        while (1);
+      }
 
       WiFi.begin(ssid, password);
       while (WiFi.status() != WL_CONNECTED) {
@@ -62,7 +72,7 @@
       Serial.println(WiFi.localIP());
 
       server.on("/", handleRoot);
-      server.on("/temperatura", handleTemperature);
+      server.on("/sensor", handleSensorData);
       server.on("/led/on", handleLedOn);
       server.on("/led/off", handleLedOff);
       server.begin();

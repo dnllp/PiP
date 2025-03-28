@@ -8,7 +8,7 @@ import queue
 class SerialInterface:
     def __init__(self, root):
         self.root = root
-        self.root.title("Control Arduino/ESP32")
+        self.root.title("Práctica Interfaz y Control con Arduino/ESP32")
         self.root.geometry("600x400")
         
         # Variables
